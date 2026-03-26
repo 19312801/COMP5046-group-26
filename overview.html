@@ -6,7 +6,7 @@
         <title>COMP5046 Group 26 Work</title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body onload = "getLocation()">
         <header class="main-header">
             <h1>Environmental Dashboard</h1>
             <nav class="navigation-buttons">
@@ -19,6 +19,7 @@
 
         <main class="ov-main">
             <h2>Overview</h2>
+            <p id = "loc"></p>
 
             <div class="ov-cards">
 
@@ -42,5 +43,25 @@
 
             </div>
         </main>
+        
+        <script>    
+            const x = document.getElementById("loc");
+            function getLocation(){
+                if (navigator.geolocation){
+                    navigator.geolocation.getCurrentPosition(success, error);
+                }
+                else{
+                    x.innerHTML = "Geolocation is not supported by this browser";
+                }
+            }
+
+            function success(position){
+                x.innerHTML = "Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude;
+            }
+
+            function error(){
+                alert("No position available.");
+            }
+        </script>
     </body>
 </html>
