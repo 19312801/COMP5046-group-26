@@ -79,13 +79,13 @@ body{
 
 /* ── Soil dashboard ── */
 .soil-main {
-    background: #fffdf5;          /* light cream page background */
+    background: #fff9dd;          /* light cream page background */
     min-height: calc(100vh - 80px);
     padding-bottom: 40px;
 }
 
 .soil-title-banner {
-    background: #f5f0e8;          /* beige banner */
+    background: #eedec5;          /* beige banner */
     text-align: center;
     padding: 28px 20px;
     margin-bottom: 32px;
