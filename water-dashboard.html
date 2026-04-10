@@ -1,25 +1,114 @@
 <!DOCTYPE html>
-<html lang = "en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>COMP5046 Group 26 Work</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <header class="main-header">
-            <h1>Environmental Dashboard</h1>
-            <nav class = "navigation-buttons">
-                <a href="overview.html">Overview</a>
-                <a href="air-dashboard.html">Air</a>
-                <a href="water-dashboard.html" class="active">Water</a>
-                <a href="soil-dashboard.html">Soil</a>
-            </nav>
-        </header>
-        <main>
-            <h2>Water Quality Dashboard</h2>
-            <div class="dashboard-content"></div>
-            <p>water quality</p>
-        </main>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header">
+        <h1>Environmental Dashboard</h1>
+        <nav class="navigation-buttons">
+            <a href="overview.html">Overview</a>
+            <a href="air-dashboard.html">Air</a>
+            <a href="water-dashboard.html" class="active">Water</a>
+            <a href="soil-dashboard.html">Soil</a>
+        </nav>
+    </header>
+
+    <main class="water-main">
+
+        <div class="water-title-banner">
+            <h2>Water Pollution</h2>
+        </div>
+
+        <div class="water-content">
+
+        <section class="water-section">
+            <h3>What is Water Pollution?</h3>
+            <p>
+                Water is polluted when it contains high levels of harmful substances. These substances
+                include toxic chemicals and microorganisms and are often invisible. They are dangerous
+                for our health and for the environment, meaning the water cannot be safely used or consumed.
+            </p>
+        </section>
+            
+        <section class="water-section">
+            <h3>Main Sources of Water Pollution</h3>
+            <ul>
+                <li><strong>Agricultural runoff</strong> — fertilisers and pesticides entering waterways</li>
+                <li><strong>Urban stormwater runoff</strong> — pollution from roads and cities</li>
+                <li><strong>Industrial discharge</strong> — waste chemicals released into water systems</li>
+            </ul>
+        </section>
+
+        <section class="water-section">
+            <h3>Effects of Water Pollution</h3>
+            <p>Water pollution can cause serious health and environmental problems:</p>
+            <ul>
+                <li><strong>Diseases</strong>
+                    <ul>
+                        <li>Cholera</li>
+                        <li>Hepatitis A</li>
+                        <li>Dysentery</li>
+                        <li>Diarrhoea</li>
+                    </ul>
+                </li>
+                <li><strong>Lack of potable water</strong></li>
+                <li><strong>Contamination of the food chain</strong></li>
+                <li><strong>Infant mortality</strong> — diarrhoeal diseases linked to poor hygiene cause the death of around 1000 children daily worldwide</li>
+            </ul>
+        </section>
+
+        <section class="water-section">
+            <h3>Ways to Reduce Water Pollution</h3>
+            <ul>
+                <li>Proper disposal of household waste such as medicines and chemicals</li>
+                <li>Reducing the use of harmful chemicals in daily life</li>
+                <li>Reducing single-use plastics</li>
+                <li>Avoiding excessive use of fertilisers and pesticides</li>
+            </ul>
+        </section>
+   
+        <section class="water-section">
+            <h3>Water Monitoring & Safety Features</h3>
+            <ul>
+                <li><strong>Water Levels</strong> — tracks rivers, streams, and lakes nearby</li>
+                <li><strong>River Conditions</strong> — identifies strong currents and overflow risks</li>
+                <li><strong>Flood Warnings</strong> — displays local flood alerts and threat levels</li>
+                <li><strong>Water Quality</strong> — monitors safety for activities like swimming</li>
+                <li><strong>Water Safety Tips</strong> — provides warnings on tides, cold water, and currents</li>
+            </ul>
+        </section>
+            
+        <!-- Links  -->
+        <section class="water-section">
+            <h3>Check Live Data</h3>
+            <ul>
+                <li>
+                    <a href="https://environment.data.gov.uk/flood-monitoring/id/floods" target="_blank">
+                        Check Flood Warnings (Live Data)
+                    </a>
+                </li>
+                <li>
+                    <a href="https://environment.data.gov.uk/flood-monitoring/doc/reference" target="_blank">
+                        View Water Levels (Official Site)
+                    </a>
+                </li>
+                <li>
+                    <a href="https://environment.data.gov.uk/water-quality/sampling-point/TH-PCHIR0016" target="_blank">
+                        View Water Quality Data
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.gov.uk/guidance/river-thames-current-river-conditions" target="_blank">
+                        View River Conditions
+                    </a>
+                </li>
+            </ul>
+        </section>
+        </div>
+    </main>
+</body>
 </html>
