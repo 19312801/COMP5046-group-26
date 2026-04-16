@@ -1,6 +1,6 @@
 body{
     margin:0;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .main-header{
@@ -33,6 +33,7 @@ body{
 }
 /* ── Overview page ── */
 .ov-main {
+    background: #e8f4ea;
     max-width: 900px;
     margin: 40px auto;
     padding: 0 20px;
