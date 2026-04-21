@@ -46,6 +46,7 @@
         
         <script>    
             const x = document.getElementById("loc");
+
             function getLocation(){
                 if (navigator.geolocation){
                     navigator.geolocation.getCurrentPosition(success, error);
@@ -55,12 +56,37 @@
                 }
             }
 
-            function success(position){
-                x.innerHTML = "Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude;
+            async function success(position){
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                const cityName = await getCityName(lat, lon);
+                x.innerHTML = `You are in: ${cityName}<br>Latitude: ${lat.toFixed(2)}<br>Longitude: ${lon.toFixed(2)}`;
+
+                localStorage.setItem("lat", lat);
+                localStorage.setItem("lon", lon);
+                localStorage.setItem("city", cityName);
             }
 
             function error(){
                 alert("No position available.");
+            }
+
+            async function getCityName(lat, lon) {
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
+                    const data = await response.json();
+
+                    const city = data.address.city || 
+                                 data.address.town || 
+                                 data.address.village || 
+                                 data.address.county;
+
+                    return city;
+                } catch (error) {
+                    console.error("Error getting city name:", error);
+                    return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+                }
             }
         </script>
     </body>

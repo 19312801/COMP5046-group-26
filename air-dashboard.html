@@ -17,6 +17,10 @@
             </nav>
         </header>
         <main>
+            <h1>European Air Quality Index</h1>
+            <div id = "status"></div>
+            <div id = "aqi"></div>
+
             <h2>Air Quality Dashboard</h2>
             <div class="dashboard-content"></div>
                </section>
@@ -88,5 +92,152 @@
                     
                      
         </main>
+
+        <script>
+            const pollutantThresholds = {
+                "PM2.5": { good: 10, fair: 20, moderate: 25, poor: 50, veryPoor: 75, extremelyPoor: 800 },
+                "PM10": { good: 20, fair: 40, moderate: 50, poor: 100, veryPoor: 150, extremelyPoor: 1200 },
+                "NO₂": { good: 40, fair: 90, moderate: 120, poor: 230, veryPoor: 340, extremelyPoor: 1000 },
+                "O₃": { good: 50, fair: 100, moderate: 130, poor: 240, veryPoor: 380, extremelyPoor: 800 },
+                "SO₂": { good: 100, fair: 200, moderate: 350, poor: 500, veryPoor: 750, extremelyPoor: 1250 },
+                "European AQI": { good: 20, fair: 40, moderate: 60, poor: 80, veryPoor: 100, extremelyPoor: Infinity }
+            };
+        
+            async function loadAQI(){
+                //gets location from local storage
+                const lat = parseFloat(localStorage.getItem("lat")); 
+                const lon = parseFloat(localStorage.getItem("lon"));
+                const city = localStorage.getItem("city");
+            
+                if (!lat || !lon) {
+                    document.getElementById("status").innerHTML = "Location not set. Visit overview page first.";
+                    return;
+                } 
+            
+                const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=european_aqi,european_aqi_pm2_5,european_aqi_pm10,european_aqi_nitrogen_dioxide,european_aqi_ozone,european_aqi_sulphur_dioxide&past_days=0&forecast_days=5`;
+                document.getElementById("status").innerHTML = `${city || 'Current Location'} (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+            
+                try{
+                    const res = await fetch(url);
+                    const data = await res.json();
+                
+                    console.log("AQI data", data);
+                
+                    const latestIndex = data.hourly.time.length - 1;
+
+                    const pollutants = {
+                        "European AQI": data.hourly.european_aqi[latestIndex],
+                        "PM2.5": data.hourly.european_aqi_pm2_5[latestIndex],
+                        "PM10": data.hourly.european_aqi_pm10[latestIndex],
+                        "NO₂": data.hourly.european_aqi_nitrogen_dioxide[latestIndex],
+                        "O₃": data.hourly.european_aqi_ozone[latestIndex],
+                        "SO₂": data.hourly.european_aqi_sulphur_dioxide[latestIndex]
+                    };
+                
+                    let html = `<div class="pollutants-container">`;
+                    for (const [name, value] of Object.entries(pollutants)) {
+                        html += createPollutantBox(name, value);
+                    }
+                    html += `</div>`;
+                    document.getElementById("aqi").innerHTML = html;
+                }
+                catch (err){
+                    console.error("Error loading AQI: ", err);
+                    document.getElementById("status").innerHTML = "Failed to load AQI data.";
+                }
+            }
+        
+            function getPollutantColour(pollutant, value) {
+                const thresholds = pollutantThresholds[pollutant] || pollutantThresholds["European AQI"];
+            
+                if (value <= thresholds.good) return 'var(--good-colour)';
+                if (value <= thresholds.fair) return 'var(--fair-colour)';
+                if (value <= thresholds.moderate) return 'var(--moderate-colour)';
+                if (value <= thresholds.poor) return 'var(--poor-colour)';
+                if (value <= thresholds.veryPoor) return 'var(--very-poor-colour)';
+                if (value <= thresholds.extremelyPoor) return 'var(--extremely-poor-colour)';
+            
+                return 'var(--default-colour)';
+            }
+        
+            function getPollutantQualityLabel(pollutant, value) {
+                const thresholds = pollutantThresholds[pollutant] || pollutantThresholds["European AQI"];
+            
+                if (value <= thresholds.good) return "Good";
+                if (value <= thresholds.fair) return "Fair";
+                if (value <= thresholds.moderate) return "Moderate";
+                if (value <= thresholds.poor) return "Poor";
+                if (value <= thresholds.veryPoor) return "Very Poor";
+                if (value <= thresholds.extremelyPoor) return "Extremely Poor";
+            
+                return "Unknown";
+            }
+        
+            function createPollutantBox(name, value){
+                const colour = getPollutantColour(name, value);
+                const quality = getPollutantQualityLabel(name, value);
+
+                return `
+                    <div class="pollutant-box" style="background-color: ${colour};">
+                        <div class="pollutant-name">${name}</div>
+                        <div class="pollutant-value">${value}</div>
+                        <div class="pollutant-quality">${quality}</div>
+                    </div>
+                `;
+            }
+        
+            loadAQI();
+        </script>
+
+        <style>
+            .pollutants-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+                margin-top: 20px;
+                padding: 20px;
+            }
+        
+            .pollutant-box {
+                width: 180px;
+                height: 180px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-radius: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                text-align: center;
+                transition: transform 0.2s;
+            }
+        
+            .pollutant-box:hover {
+                transform: translateY(-5px);
+            }
+        
+            .pollutant-name {
+                font-size: 16px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+        
+            .pollutant-value {
+                font-size: 48px;
+                font-weight: bold;
+                color: #333;
+                margin: 10px 0;
+            }
+        
+            .pollutant-quality {
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+                margin-top: 5px;
+            }
+        </style>
     </body>
 </html>
