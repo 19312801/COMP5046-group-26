@@ -6,7 +6,7 @@
         <title>COMP5046 Group 26 Work</title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body onload = "getLocation()">
+    <body>
         <header class="main-header">
             <h1>Environmental Dashboard</h1>
             <nav class="navigation-buttons">
@@ -19,10 +19,11 @@
 
         <main class="ov-main">
             <h2>Overview</h2>
-            <p id = "loc"></p>
+            <p id="loc"></p>
+            <!--button to manually refresh geolocation-->
+            <button onclick="refreshLocation()" style="margin: 10px 0; padding: 8px 16px;">📍 Refresh Location</button>
 
             <div class="ov-cards">
-
                 <a href="air-dashboard.html" class="ov-card">
                     <div class="ov-card-icon">&#127788;</div>
                     <h3>Air Quality</h3>
@@ -40,54 +41,247 @@
                     <h3>Soil Quality</h3>
                     <p>Measures organic matter, nitrogen levels, and soil contamination indicators.</p>
                 </a>
-
             </div>
         </main>
-        
-        <script>    
-            const x = document.getElementById("loc");
 
-            function getLocation(){
-                if (navigator.geolocation){
-                    navigator.geolocation.getCurrentPosition(success, error);
-                }
-                else{
-                    x.innerHTML = "Geolocation is not supported by this browser";
+        <script>    
+            //reference to location paragraph element
+            const x = document.getElementById("loc");
+            //flag to prevent duplicate manual input sections
+            let manualInputCreated = false;
+
+            //initialise location on page load
+            function initLocation() {
+                //check for existing location in localstorage
+                const storedLat = localStorage.getItem("lat");
+                const storedLon = localStorage.getItem("lon");
+                const storedCity = localStorage.getItem("city");
+                
+                //display stored location if it exists
+                if (storedLat && storedLon && storedCity) {
+                    x.innerHTML = `You are in: ${storedCity}<br>Latitude: ${parseFloat(storedLat).toFixed(2)}<br>Longitude: ${parseFloat(storedLon).toFixed(2)}`;
+                    createManualInput();
+                } else {
+                    //get new location if nothing is stored
+                    getLocation();
                 }
             }
 
-            async function success(position){
+            //request geolocation from browser
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(success, error);
+                } else {
+                    x.innerHTML = "Geolocation is not supported by this browser";
+                    createManualInput();
+                }
+            }
+
+            //manually refresh location when button is clicked
+            async function refreshLocation() {
+                x.innerHTML = "Getting current location...";
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const cityName = await getCityName(lat, lon);
+                        
+                        x.innerHTML = `You are in: ${cityName}<br>Latitude: ${lat.toFixed(2)}<br>Longitude: ${lon.toFixed(2)}`;
+                        
+                        //save to localstorage
+                        localStorage.setItem("lat", lat);
+                        localStorage.setItem("lon", lon);
+                        localStorage.setItem("city", cityName);
+                        
+                        alert(`Location updated to ${cityName}!`);
+                    }, error);
+                } else {
+                    alert("Geolocation not supported");
+                }
+            }
+
+            //success callback for geolocation
+            async function success(position) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
 
                 const cityName = await getCityName(lat, lon);
                 x.innerHTML = `You are in: ${cityName}<br>Latitude: ${lat.toFixed(2)}<br>Longitude: ${lon.toFixed(2)}`;
 
+                //save to localstorage
                 localStorage.setItem("lat", lat);
                 localStorage.setItem("lon", lon);
                 localStorage.setItem("city", cityName);
+
+                createManualInput();
             }
 
-            function error(){
+            //error callback for geolocation
+            function error() {
                 alert("No position available.");
+                createManualInput();
             }
 
+            //convert coordinates to city name using reverse geocoding
             async function getCityName(lat, lon) {
                 try {
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`, {
+                        headers: { 'User-Agent': 'Environmental-Dashboard/1.0' }
+                    });
                     const data = await response.json();
 
+                    //extract city from various possible address fields
                     const city = data.address.city || 
                                  data.address.town || 
                                  data.address.village || 
                                  data.address.county;
 
-                    return city;
+                    //return coordinates as fallback if no city found
+                    return city || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
                 } catch (error) {
                     console.error("Error getting city name:", error);
                     return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
                 }
             }
+
+            //create manual input section for users to enter location
+            function createManualInput() {
+                //prevent duplicate sections
+                if (manualInputCreated || document.querySelector(".manual-location")) {
+                    return;
+                }
+                manualInputCreated = true;
+                
+                const manualSection = document.createElement("div");
+                manualSection.className = "manual-location";
+                manualSection.innerHTML = `
+                    <h3>Or Enter Location Manually</h3>
+                    <div class="manual-input-group">
+                        <input type="text" id="cityInput" placeholder="Enter city name" style="padding: 8px; width: 250px;">
+                        <button onclick="searchCity()" style="padding: 8px 16px;">Search City</button>
+                    </div>
+                    <div class="manual-input-group">
+                        <span>OR</span>
+                    </div>
+                    <div class="manual-input-group">
+                        <input type="text" id="latInput" placeholder="Latitude" style="padding: 8px; width: 120px;">
+                        <input type="text" id="lonInput" placeholder="Longitude" style="padding: 8px; width: 120px;">
+                        <button onclick="setManualCoordinates()" style="padding: 8px 16px;">Set Coordinates</button>
+                    </div>
+                `;
+                //insert manual section below location paragraph
+                x.parentNode.insertBefore(manualSection, x.nextSibling);
+            }
+
+            //search for city by name and set location
+            async function searchCity() {
+                const cityInput = document.getElementById("cityInput").value;
+                if (!cityInput) {
+                    alert("Please enter a city name");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityInput)}&limit=1`, {
+                        headers: { 'User-Agent': 'Environmental-Dashboard/1.0' }
+                    });
+                    const data = await response.json();
+
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        const cityName = data[0].display_name.split(',')[0];
+
+                        //save to localstorage
+                        localStorage.setItem("lat", lat);
+                        localStorage.setItem("lon", lon);
+                        localStorage.setItem("city", cityName);
+
+                        x.innerHTML = `You are in: ${cityName}<br>Latitude: ${lat.toFixed(4)}<br>Longitude: ${lon.toFixed(4)}`;
+                        
+                        alert(`Location updated to ${cityName}!`);
+                    } else {
+                        alert("City not found. Try entering coordinates manually.");
+                    }
+                } catch (error) {
+                    console.error("Error searching city:", error);
+                    alert("Error searching for city. Please try coordinates manually.");
+                }
+            }
+
+            //set location using manual latitude and longitude
+            function setManualCoordinates() {
+                const lat = parseFloat(document.getElementById("latInput").value);
+                const lon = parseFloat(document.getElementById("lonInput").value);
+
+                //validate input
+                if (isNaN(lat) || isNaN(lon)) {
+                    alert("Please enter valid latitude and longitude");
+                    return;
+                }
+
+                //check latitude range
+                if (lat < -90 || lat > 90) {
+                    alert("Latitude must be between -90 and 90");
+                    return;
+                }
+
+                //check longitude range
+                if (lon < -180 || lon > 180) {
+                    alert("Longitude must be between -180 and 180");
+                    return;
+                }
+
+                //get city name from coordinates
+                getCityName(lat, lon).then(cityName => {
+                    localStorage.setItem("lat", lat);
+                    localStorage.setItem("lon", lon);
+                    localStorage.setItem("city", cityName);
+
+                    x.innerHTML = `You are in: ${cityName}<br>Latitude: ${lat.toFixed(4)}<br>Longitude: ${lon.toFixed(4)}`;
+                    
+                    alert(`Location updated to ${cityName}!`);
+                });
+            }
+
+            //start the application
+            initLocation();
         </script>
+
+        <style>
+            .manual-location {
+                margin-top: 20px;
+                padding: 15px;
+                background-color: #f5f5f5;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .manual-input-group {
+                margin: 10px 0;
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            .manual-input-group span {
+                color: #666;
+                font-weight: bold;
+            }
+            
+            button {
+                cursor: pointer;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+            }
+            
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
     </body>
 </html>
