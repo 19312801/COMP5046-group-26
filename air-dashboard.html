@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>COMP5046 Group 26 Work</title>
         <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     </head>
     <body>
         <header class="main-header">
@@ -19,6 +21,7 @@
         <main>
             <h1>European Air Quality Index</h1>
             <div id = "status"></div>
+            <div id="map" style="height: 300px; width: 100%;"></div>
             <div id = "aqi"></div>
 
             <h2>Air Quality Dashboard</h2>
@@ -102,6 +105,16 @@
                 "SO₂": { good: 100, fair: 200, moderate: 350, poor: 500, veryPoor: 750, extremelyPoor: 1250 },
                 "European AQI": { good: 20, fair: 40, moderate: 60, poor: 80, veryPoor: 100, extremelyPoor: Infinity }
             };
+
+            function getLatestValue(arr) {
+                if (!arr) return null;
+                for (let i = arr.length - 1; i >= 0; i--) {
+                    if (arr[i] !== null && arr[i] !== undefined) {
+                        return arr[i];
+                    }
+                }
+                return null;
+            }
         
             async function loadAQI(){
                 //gets location from local storage
@@ -123,15 +136,22 @@
                 
                     console.log("AQI data", data);
                 
-                    const latestIndex = data.hourly.time.length - 1;
+                    let latestIndex = data.hourly.time.length - 1;
+
+                    while (latestIndex >=0 && data.hourly.european_aqi[latestIndex] === null){
+                        latestIndex--;
+                    }
+                    if (latestIndex < 0){
+                        latestIndex = 0;
+                    }
 
                     const pollutants = {
-                        "European AQI": data.hourly.european_aqi[latestIndex],
-                        "PM2.5": data.hourly.european_aqi_pm2_5[latestIndex],
-                        "PM10": data.hourly.european_aqi_pm10[latestIndex],
-                        "NO₂": data.hourly.european_aqi_nitrogen_dioxide[latestIndex],
-                        "O₃": data.hourly.european_aqi_ozone[latestIndex],
-                        "SO₂": data.hourly.european_aqi_sulphur_dioxide[latestIndex]
+                        "European AQI": getLatestValue(data.hourly.european_aqi),          
+                        "PM2.5": getLatestValue(data.hourly.european_aqi_pm2_5),           
+                        "PM10": getLatestValue(data.hourly.european_aqi_pm10),             
+                        "NO₂": getLatestValue(data.hourly.european_aqi_nitrogen_dioxide),  
+                        "O₃": getLatestValue(data.hourly.european_aqi_ozone),              
+                        "SO₂": getLatestValue(data.hourly.european_aqi_sulphur_dioxide)    
                     };
                 
                     let html = `<div class="pollutants-container">`;
@@ -145,6 +165,8 @@
                     console.error("Error loading AQI: ", err);
                     document.getElementById("status").innerHTML = "Failed to load AQI data.";
                 }
+
+                initMap(lat, lon);
             }
         
             function getPollutantColour(pollutant, value) {
@@ -187,6 +209,13 @@
             }
         
             loadAQI();
+
+            function initMap(lat, lon) {
+                var map = L.map('map').setView([lat, lon], 10);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+            }
         </script>
 
         <style>
