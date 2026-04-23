@@ -168,3 +168,101 @@ body{
     --extremely-poor-colour: #7D2181; 
     --default: #000000;
 }
+
+/* Water dashboard*/
+
+.water-boxes-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.water-box {
+    width: 180px;
+    height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    border-radius: 16px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+}
+
+.water-box:hover {
+    transform: translateY(-5px);
+}
+
+.water-box-title {
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.water-box-value {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 6px 0;
+}
+
+.water-box-label {
+    font-weight: bold;
+}
+
+.water-box-sub {
+    font-size: 11px;
+    color: #555;
+}
+/*colors */
+.box-green  { background: var(--good-colour); }
+.box-orange { background: var(--moderate-colour); }
+.box-red    { background: var(--poor-colour); }
+.box-blue   { background: #b3d9ff; }
+.box-grey   { background: #ddd; }
+
+/* Tabs */
+.tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.tab-btn:hover {
+    background: #e0e0e0;
+}
+
+.tab-btn.active {
+    background: #2a7ae2;
+    color: white;
+    border-color: #2a7ae2;
+}
+
+.tab-content {
+    display: none;
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
+.tab-content.active {
+    display: block;
+}
