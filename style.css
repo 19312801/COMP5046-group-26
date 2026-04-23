@@ -96,7 +96,7 @@ body{
 
 /* ── Overview page ── */
 .ov-main {
-    background: #e8f4ea;
+    background: #e4f4e9;
     max-width: 900px;
     margin: 40px auto;
     padding: 0 20px;
@@ -162,7 +162,7 @@ body{
 
 /* ── Soil dashboard ── */
 .soil-main {
-    background: #fff9dd;          /* light cream page background */
+    background: #e4f4e9;          /* light cream page background */
     min-height: calc(100vh - 80px);
     padding-bottom: 40px;
 }
@@ -257,7 +257,7 @@ body{
 
 /*air quality page*/
 .air-main {
-    background: #e0f7fa;          /* light cyan background */
+    background: #e4f4e9;          /* light cyan background */
     min-height: calc(100vh - 80px);
     padding-bottom: 40px;
 }
@@ -309,6 +309,23 @@ body{
 }
 
 /* Water dashboard*/
+.water-main {
+    background: #e4f4e9;         /* light cyan background */
+    min-height: calc(100vh - 80px);
+    padding-bottom: 40px;
+}
+
+.water-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+.water-title-banner {
+    background: #b3d9ff;          /* light blue banner */
+    text-align: center;
+    padding: 28px 20px;
+    margin-bottom: 32px;
+}
 
 .water-boxes-container {
     display: flex;
