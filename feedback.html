@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>COMP5046 Group 26 Work - Feedback</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <header class="main-header">
+            <h1>Environmental Dashboard</h1>
+            <nav class="navigation-buttons">
+                <a href="overview.html">Overview</a>
+                <a href="air-dashboard.html">Air</a>
+                <a href="water-dashboard.html">Water</a>
+                <a href="soil-dashboard.html">Soil</a>
+                <a href="feedback.html" class="active">Feedback</a>
+            </nav>
+        </header>
+
+        <main class="feedback-main">
+            <h2>Submit Feedback</h2>
+            <p class="feedback-intro">Please share your thoughts about the Environmental Dashboard.</p>
+            <!--container for alert messages-->
+            <div id="message-container"></div>
+
+            <form id="feedback-form" class="feedback-form">
+                <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name">
+                    <div class="error-message" id="name-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address">
+                    <div class="error-message" id="email-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rating">Rating <span class="required">*</span></label>
+                    <select id="rating" name="rating">
+                        <option value="">Select a rating</option>
+                        <option value="5">Excellent - 5 stars</option>
+                        <option value="4">Good - 4 stars</option>
+                        <option value="3">Average - 3 stars</option>
+                        <option value="2">Poor - 2 stars</option>
+                        <option value="1">Very Poor - 1 star</option>
+                    </select>
+                    <div class="error-message" id="rating-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Feedback Message <span class="required">*</span></label>
+                    <textarea id="message" name="message" rows="5" placeholder="Please share your feedback..."></textarea>
+                    <div class="error-message" id="message-error"></div>
+                    <!--character counter showing message length-->
+                    <div class="character-count" id="char-count">0 / 500 characters</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-button" class="submit-button">Submit Feedback</button>
+                    <button type="reset" id="reset-button" class="reset-button">Clear Form</button>
+                </div>
+            </form>
+
+            <!--modal popup for confirmation after submission-->
+            <div id="confirmation-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Thank You!</h3>
+                        <button class="close-modal" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Your feedback has been submitted successfully.</p>
+                        <p>We appreciate your input and will use it to improve our dashboard.</p>
+                        <!--displays submitted information-->
+                        <div class="submission-details" id="submission-details"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="closeModal()" class="modal-button">OK</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            //get form elements
+            const form = document.getElementById('feedback-form');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const ratingSelect = document.getElementById('rating');
+            const messageInput = document.getElementById('message');
+            const charCount = document.getElementById('char-count');
+            const messageContainer = document.getElementById('message-container');
+
+            //character counter for feedback message
+            messageInput.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = `${length} / 500 characters`;
+                if (length > 500) {
+                    charCount.style.color = '#FF5050';
+                    charCount.textContent = `Exceeded: ${length} / 500 characters`;
+                } else {
+                    charCount.style.color = '#666';
+                }
+            });
+
+            //real-time validation for name field
+            nameInput.addEventListener('input', function() {
+                validateName();
+            });
+
+            //real-time validation for email field
+            emailInput.addEventListener('input', function() {
+                validateEmail();
+            });
+
+            //real-time validation for rating field
+            ratingSelect.addEventListener('change', function() {
+                validateRating();
+            });
+
+            //real-time validation for message field
+            messageInput.addEventListener('input', function() {
+                validateMessage();
+            });
+
+            //validate name field not empty and minimum length
+            function validateName() {
+                const name = nameInput.value.trim();
+                const errorDiv = document.getElementById('name-error');
+                if (name === '') {
+                    errorDiv.textContent = 'Name is required';
+                    return false;
+                } else if (name.length < 2) {
+                    errorDiv.textContent = 'Name must be at least 2 characters';
+                    return false;
+                } else {
+                    errorDiv.textContent = '';
+                    return true;
+                }
+            }
+
+            //validate email format using regex
+            function validateEmail() {
+                const email = emailInput.value.trim();
+                const errorDiv = document.getElementById('email-error');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (email === '') {
+                    errorDiv.textContent = 'Email is required';
+                    return false;
+                } else if (!emailRegex.test(email)) {
+                    errorDiv.textContent = 'Please enter a valid email address';
+                    return false;
+                } else {
+                    errorDiv.textContent = '';
+                    return true;
+                }
+            }
+
+            //validate rating has been selected
+            function validateRating() {
+                const rating = ratingSelect.value;
+                const errorDiv = document.getElementById('rating-error');
+                if (rating === '') {
+                    errorDiv.textContent = 'Please select a rating';
+                    return false;
+                } else {
+                    errorDiv.textContent = '';
+                    return true;
+                }
+            }
+
+            //validate message not empty and within character limit
+            function validateMessage() {
+                const message = messageInput.value.trim();
+                const errorDiv = document.getElementById('message-error');
+                if (message === '') {
+                    errorDiv.textContent = 'Feedback message is required';
+                    return false;
+                } else if (message.length < 10) {
+                    errorDiv.textContent = 'Please provide more detail (at least 10 characters)';
+                    return false;
+                } else if (message.length > 500) {
+                    errorDiv.textContent = 'Message must be less than 500 characters';
+                    return false;
+                } else {
+                    errorDiv.textContent = '';
+                    return true;
+                }
+            }
+
+            //display temporary alert message
+            function showMessage(type, text) {
+                messageContainer.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+                setTimeout(() => {
+                    const alert = document.querySelector('.alert');
+                    if (alert) alert.style.opacity = '0';
+                    setTimeout(() => {
+                        if (messageContainer.firstChild) messageContainer.removeChild(messageContainer.firstChild);
+                    }, 500);
+                }, 5000);
+            }
+
+            //show confirmation modal with submitted data
+            function showConfirmationModal(formData) {
+                const modal = document.getElementById('confirmation-modal');
+                const detailsDiv = document.getElementById('submission-details');
+                //convert rating number to text label
+                const ratingText = {
+                    '5': 'Excellent',
+                    '4': 'Good',
+                    '3': 'Average',
+                    '2': 'Poor',
+                    '1': 'Very Poor'
+                }[formData.rating] || formData.rating;
+                
+                detailsDiv.innerHTML = `
+                    <p><strong>Name:</strong> ${escapeHtml(formData.name)}</p>
+                    <p><strong>Email:</strong> ${escapeHtml(formData.email)}</p>
+                    <p><strong>Rating:</strong> ${ratingText}</p>
+                `;
+                modal.style.display = 'flex';
+            }
+
+            //prevent xss attacks by escaping html characters
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            //close modal and reset form
+            function closeModal() {
+                const modal = document.getElementById('confirmation-modal');
+                modal.style.display = 'none';
+                form.reset();
+                charCount.textContent = '0 / 500 characters';
+                document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
+                //show success message in main container
+                showMessage('success', 'Thank you for your feedback!');
+            }
+
+            //form submission handler
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();  //prevent page reload
+                
+                //validate all fields before submission
+                const isNameValid = validateName();
+                const isEmailValid = validateEmail();
+                const isRatingValid = validateRating();
+                const isMessageValid = validateMessage();
+                
+                if (!isNameValid || !isEmailValid || !isRatingValid || !isMessageValid) {
+                    showMessage('error', 'Please correct the errors before submitting.');
+                    return;
+                }
+                
+                //check message length again for safety
+                if (messageInput.value.trim().length > 500) {
+                    showMessage('error', 'Message must be less than 500 characters.');
+                    return;
+                }
+                
+                //collect form data
+                const formData = {
+                    name: nameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    rating: ratingSelect.value,
+                    message: messageInput.value.trim(),
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('Feedback submitted:', formData);
+                
+                //store in localStorage as mock database
+                let allFeedback = JSON.parse(localStorage.getItem('feedback_submissions') || '[]');
+                allFeedback.push(formData);
+                localStorage.setItem('feedback_submissions', JSON.stringify(allFeedback));
+                
+                //show success modal and reset form
+                showConfirmationModal(formData);
+                form.reset();
+                charCount.textContent = '0 / 500 characters';
+                document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
+            });
+            
+            //reset button clears all fields and errors
+            document.getElementById('reset-button').addEventListener('click', function(e) {
+                e.preventDefault();
+                form.reset();
+                charCount.textContent = '0 / 500 characters';
+                document.querySelectorAll('.error-message').forEach(div => div.textContent = '');
+                showMessage('info', 'Form has been cleared.');
+            });
+
+            //make closeModal available globally for onclick
+            window.closeModal = closeModal;
+        </script>
+
+        <style>
+            .feedback-main {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            
+            .feedback-main h2 {
+                color: #333;
+                margin-bottom: 10px;
+            }
+            
+            .feedback-intro {
+                color: #666;
+                margin-bottom: 30px;
+                font-size: 16px;
+            }
+            
+            .feedback-form {
+                background-color: #fff;
+                border-radius: 8px;
+                padding: 30px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .form-group {
+                margin-bottom: 25px;
+            }
+            
+            .form-group label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 8px;
+                color: #333;
+            }
+            
+            .required {
+                color: #FF5050;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width: 100%;
+                padding: 10px;
+                border: 2px solid #e0e0e0;
+                border-radius: 4px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+            }
+            
+            .form-group input:focus,
+            .form-group select:focus,
+            .form-group textarea:focus {
+                outline: none;
+                border-color: #4CAF50;
+            }
+            
+            .error-message {
+                color: #FF5050;
+                font-size: 12px;
+                margin-top: 5px;
+                min-height: 20px;
+            }
+            
+            .character-count {
+                font-size: 12px;
+                color: #666;
+                margin-top: 5px;
+                text-align: right;
+            }
+            
+            .form-actions {
+                display: flex;
+                gap: 15px;
+                justify-content: flex-start;
+                margin-top: 30px;
+            }
+            
+            .submit-button,
+            .reset-button,
+            .modal-button {
+                padding: 10px 24px;
+                border: none;
+                border-radius: 4px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            
+            .submit-button {
+                background-color: #4CAF50;
+                color: white;
+            }
+            
+            .submit-button:hover:not(:disabled) {
+                background-color: #45a049;
+            }
+            
+            .submit-button:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+            
+            .reset-button {
+                background-color: #f44336;
+                color: white;
+            }
+            
+            .reset-button:hover {
+                background-color: #da190b;
+            }
+            
+            .alert {
+                padding: 12px 20px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+                transition: opacity 0.5s;
+            }
+            
+            .alert-success {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+            
+            .alert-error {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+            
+            .alert-info {
+                background-color: #d1ecf1;
+                color: #0c5460;
+                border: 1px solid #bee5eb;
+            }
+            
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            }
+            
+            .modal-content {
+                background-color: white;
+                border-radius: 8px;
+                max-width: 500px;
+                width: 90%;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            }
+            
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 20px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .modal-header h3 {
+                margin: 0;
+                color: #4CAF50;
+            }
+            
+            .close-modal {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #999;
+            }
+            
+            .close-modal:hover {
+                color: #333;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .modal-body p {
+                margin: 10px 0;
+                color: #333;
+            }
+            
+            .submission-details {
+                background-color: #f5f5f5;
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 15px;
+                font-size: 14px;
+            }
+            
+            .submission-details p {
+                margin: 5px 0;
+            }
+            
+            .modal-footer {
+                padding: 15px 20px;
+                border-top: 1px solid #e0e0e0;
+                text-align: right;
+            }
+            
+            .modal-button {
+                background-color: #4CAF50;
+                color: white;
+            }
+            
+            .modal-button:hover {
+                background-color: #45a049;
+            }
+            
+            @media (max-width: 768px) {
+                .feedback-form {
+                    padding: 20px;
+                }
+                
+                .form-actions {
+                    flex-direction: column;
+                }
+                
+                .submit-button,
+                .reset-button {
+                    width: 100%;
+                }
+            }
+        </style>
+    </body>
+</html>
