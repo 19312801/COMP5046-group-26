@@ -1,114 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Water Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header class="main-header">
-        <h1>Environmental Dashboard</h1>
-        <nav class="navigation-buttons">
-            <a href="overview.html">Overview</a>
-            <a href="air-dashboard.html">Air</a>
-            <a href="water-dashboard.html" class="active">Water</a>
-            <a href="soil-dashboard.html">Soil</a>
-        </nav>
-    </header>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Water Dashboard</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    </head>
+    <body>
+        <header class="main-header">
+            <h1>Environmental Dashboard</h1>
+            <nav class="navigation-buttons">
+                <a href="overview.html">Overview</a>
+                <a href="air-dashboard.html">Air</a>
+                <a href="water-dashboard.html" class="active">Water</a>
+                <a href="soil-dashboard.html">Soil</a>
+            </nav>
+        </header>
 
-    <main class="water-main">
+        <main>
+            <h1>Water Pollution Dashboard</h1>
+            <div id="status"></div>
+            <div id="map" style="height: 300px; width: 100%;"></div>
 
-        <div class="water-title-banner">
-            <h2>Water Pollution</h2>
-        </div>
+            <!-- Live data boxes (same layout as AQI boxes in air dashboard) -->
+            <div id="water-live"></div>
 
-        <div class="water-content">
+            <h2>Water Information</h2>
 
-        <section class="water-section">
-            <h3>What is Water Pollution?</h3>
-            <p>
-                Water is polluted when it contains high levels of harmful substances. These substances
-                include toxic chemicals and microorganisms and are often invisible. They are dangerous
-                for our health and for the environment, meaning the water cannot be safely used or consumed.
-            </p>
-        </section>
-            
-        <section class="water-section">
-            <h3>Main Sources of Water Pollution</h3>
-            <ul>
-                <li><strong>Agricultural runoff</strong> — fertilisers and pesticides entering waterways</li>
-                <li><strong>Urban stormwater runoff</strong> — pollution from roads and cities</li>
-                <li><strong>Industrial discharge</strong> — waste chemicals released into water systems</li>
-            </ul>
-        </section>
+<div class="dashboard-content">
 
-        <section class="water-section">
-            <h3>Effects of Water Pollution</h3>
-            <p>Water pollution can cause serious health and environmental problems:</p>
-            <ul>
-                <li><strong>Diseases</strong>
-                    <ul>
-                        <li>Cholera</li>
-                        <li>Hepatitis A</li>
-                        <li>Dysentery</li>
-                        <li>Diarrhoea</li>
-                    </ul>
-                </li>
-                <li><strong>Lack of potable water</strong></li>
-                <li><strong>Contamination of the food chain</strong></li>
-                <li><strong>Infant mortality</strong> — diarrhoeal diseases linked to poor hygiene cause the death of around 1000 children daily worldwide</li>
-            </ul>
-        </section>
+    <section>
+        <h3>What is Water Pollution?</h3>
+        <p>
+            Water pollution happens when harmful substances such as toxic chemicals and microorganisms enter water sources. These pollutants are often invisible and make water unsafe for drinking and use.
+        </p>
+    </section>
 
-        <section class="water-section">
-            <h3>Ways to Reduce Water Pollution</h3>
-            <ul>
-                <li>Proper disposal of household waste such as medicines and chemicals</li>
-                <li>Reducing the use of harmful chemicals in daily life</li>
-                <li>Reducing single-use plastics</li>
-                <li>Avoiding excessive use of fertilisers and pesticides</li>
-            </ul>
-        </section>
-   
-        <section class="water-section">
-            <h3>Water Monitoring & Safety Features</h3>
-            <ul>
-                <li><strong>Water Levels</strong> — tracks rivers, streams, and lakes nearby</li>
-                <li><strong>River Conditions</strong> — identifies strong currents and overflow risks</li>
-                <li><strong>Flood Warnings</strong> — displays local flood alerts and threat levels</li>
-                <li><strong>Water Quality</strong> — monitors safety for activities like swimming</li>
-                <li><strong>Water Safety Tips</strong> — provides warnings on tides, cold water, and currents</li>
-            </ul>
-        </section>
-            
-        <!-- Links  -->
-        <section class="water-section">
-            <h3>Check Live Data</h3>
-            <ul>
-                <li>
-                    <a href="https://environment.data.gov.uk/flood-monitoring/id/floods" target="_blank">
-                        Check Flood Warnings (Live Data)
-                    </a>
-                </li>
-                <li>
-                    <a href="https://environment.data.gov.uk/flood-monitoring/doc/reference" target="_blank">
-                        View Water Levels (Official Site)
-                    </a>
-                </li>
-                <li>
-                    <a href="https://environment.data.gov.uk/water-quality/sampling-point/TH-PCHIR0016" target="_blank">
-                        View Water Quality Data
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.gov.uk/guidance/river-thames-current-river-conditions" target="_blank">
-                        View River Conditions
-                    </a>
-                </li>
-            </ul>
-        </section>
-        </div>
+    <section>
+        <h3>Main Sources of Water Pollution</h3>
+        <ul>
+            <li>Agricultural runoff</li>
+            <li>Urban stormwater runoff</li>
+            <li>Industrial discharge</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Effects of Water Pollution</h3>
+        <ul>
+            <li><strong>Diseases:</strong> Cholera, Hepatitis A, Dysentery, Diarrhoea</li>
+            <li>Lack of potable water</li>
+            <li>Contamination of the food chain</li>
+            <li>
+                Infant mortality — diarrhoeal diseases linked to poor hygiene
+                cause around 1,000 child deaths per day worldwide
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Ways to Reduce Water Pollution</h3>
+        <ul>
+            <li>Dispose of household waste (medicines, chemicals, wastewater) correctly</li>
+            <li>Reduce use of harmful chemicals in daily life</li>
+            <li>Reduce single-use plastics</li>
+            <li>Avoid excessive use of fertilisers and pesticides</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Water Data Features</h3>
+        <ul>
+            <li><strong>Water Levels:</strong> Nearby rivers, streams, and lakes</li>
+            <li><strong>River Conditions:</strong> Currents, storm overflows, sewage discharge points</li>
+            <li><strong>Flood Warnings:</strong> Local flood risk levels and alerts</li>
+            <li><strong>Water Quality:</strong> Monitoring of nearby swimming and drinking water safety</li>
+            <li><strong>Water Safety Tips:</strong> Tide conditions, cold weather risks, and current hazards</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Data Sources</h3>
+        <ul>
+            <li><a href="https://www.api.gov.uk/ea/flood-monitoring/#flood-monitoring" target="_blank">Flood Monitoring API</a></li>
+            <li><a href="https://environment.data.gov.uk/water-quality/sampling-point/TH-PCHR0016" target="_blank">Water Quality Data</a></li>
+            <li><a href="https://environment.data.gov.uk/flood-monitoring/doc/reference" target="_blank">Water Level API Reference</a></li>
+            <li><a href="https://www.gov.uk/guidance/river-thames-current-river-conditions" target="_blank">River Conditions (Thames)</a></li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>References</h3>
+        <ul>
+        <li>Centre for Ecology & Hydrology (2019) <i>Water quality sites and sondes</i>. Available at: https://oxfordrivers.ceh.ac.uk/data/understanding-the-data/water_quality</li>
+
+        <li>European Union (2023) <i>Polluted water</i>. Available at: https://environment.ec.europa.eu/topics/water/water-wise-eu/polluted-water_en </li>
+
+        <li>World Health Organization (2023) <i>Drinking-water</i>. Available at: https://www.who.int/news-room/fact-sheets/detail/drinking-water </li>
+
+        <li>Environment Agency (n.d.) <i>Flood monitoring API documentation</i>. Available at: https://www.api.gov.uk/ea/flood-monitoring/#flood-monitoring .</li>
+
+        <li>UK Government (n.d.) <i>River Thames current river conditions</i>. Available at: https://www.gov.uk/guidance/river-thames-current-river-conditions </li>
+    </ul>
+    </section>
+
+    </div>
     </main>
-</body>
-</html>
+
+
+<script>
+/* ───────── Tabs ───────── */
+function switchTab(prefix, id, btn) {
+    document.querySelectorAll(`[id^="${prefix}-"]`).forEach(el => el.classList.remove('active'));
+    btn.closest('section').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`${prefix}-${id}`).classList.add('active');
+    btn.classList.add('active');
+}
+
+const showRisk = (id, btn) => switchTab('risk', id, btn);
+const showVuln = (id, btn) => switchTab('vuln', id, btn);
+
+/* ───────── Location ───────── */
+const lat = +localStorage.getItem('lat') || 51.5;
+const lon = +localStorage.getItem('lon') || -0.12;
+const city = localStorage.getItem('city') || 'Thames Region';
+
+document.getElementById('status').innerHTML =
+    `${city} (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+
+/* ───────── Map ───────── */
+window.addEventListener('DOMContentLoaded', () => {
+    const map = L.map('map').setView([lat, lon], 10);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+});
+
+/* ───────── Safe fetch helper ───────── */
+async function getJSON(url) {
+    try {
+        const res = await fetch(url);
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
+/* ───────── Floods ───────── */
+async function getFloods() {
+    const data = await getJSON(
+        'https://environment.data.gov.uk/flood-monitoring/id/floods?min-severity=1&_limit=10'
+    );
+
+    const items = data?.items || [];
+    const count = items.length;
+
+    let label = 'None', box = 'box-green';
+
+    if (count) {
+        const sev = items[0].severityLevel;
+        if (sev <= 2) { label = 'Severe'; box = 'box-red'; }
+        else if (sev === 3) { label = 'Alert'; box = 'box-orange'; }
+        else { label = 'Monitor'; }
+    }
+
+    return { value: count, label, sub: 'warnings', box };
+}
+
+/* ───────── Water Level ───────── */
+async function getLevel() {
+    const s = await getJSON(
+        `https://environment.data.gov.uk/flood-monitoring/id/stations?lat=${lat}&long=${lon}&dist=15&_limit=1&parameter=level`
+    );
+
+    const station = s?.items?.[0];
+    if (!station) return { value: '—', label: 'No Data', sub: '', box: 'box-grey' };
+
+    const r = await getJSON(
+        `https://environment.data.gov.uk/flood-monitoring/id/stations/${station.stationReference}/readings?_limit=1`
+    );
+
+    const val = parseFloat(r?.items?.[0]?.value || 0);
+    const high = station.typicalRangeHigh || 999;
+
+    const box =
+        val > high ? 'box-red' :
+        val > high * 0.8 ? 'box-orange' :
+        'box-green';
+
+    return {
+        value: val.toFixed(2) + 'm',
+        label: val > high ? 'High' : 'Normal',
+        sub: station.label,
+        box
+    };
+}
+
+/* ───────── River Flow (working) ───────── */
+async function getFlow() {
+    const s = await getJSON(
+        `https://environment.data.gov.uk/flood-monitoring/id/stations?lat=${lat}&long=${lon}&dist=50&_limit=1&parameter=flow`
+    );
+
+    const station = s?.items?.[0];
+    if (!station) return { value: '—', label: 'No Data', sub: '', box: 'box-grey' };
+
+    const r = await getJSON(
+        `https://environment.data.gov.uk/flood-monitoring/id/stations/${station.stationReference}/readings?_limit=1`
+    );
+
+    const val = parseFloat(r?.items?.[0]?.value || 0);
+
+    const box =
+        val > 200 ? 'box-red' :
+        val > 100 ? 'box-orange' :
+        'box-green';
+
+    return {
+        value: val.toFixed(1),
+        label: 'Flow',
+        sub: 'm³/s',
+        box
+    };
+}
+
+/* ───────── Water Quality (FIXED) ───────── */
+async function getQuality() {
+    const data = await getJSON(
+        'https://environment.data.gov.uk/water-quality/id/sampling-point/TH-PCHR0016/readings?_limit=5'
+    );
+
+    const items = data?.items || [];
+
+    if (items.length === 0) {
+        return {
+            value: '—',
+            label: 'No Data',
+            sub: '',
+            box: 'box-grey'
+        };
+    }
+
+    const r = items[0];
+
+    return {
+        value: parseFloat(r.result).toFixed(1),
+        label: r.determinand?.label || 'Quality',
+        sub: r.determinand?.unit?.label || '',
+        box: 'box-blue'
+    };
+}
+
+/* ───────── Render boxes ───────── */
+function renderBoxes(data) {
+    document.getElementById('water-live').innerHTML = `
+        <div class="water-boxes-container">
+            ${data.map(d => `
+                <div class="water-box ${d.box}">
+                    <div class="water-box-title">${d.title}</div>
+                    <div class="water-box-value">${d.value}</div>
+                    <div class="water-box-label">${d.label}</div>
+                    <div class="water-box-sub">${d.sub}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+/* ───────── Init ───────── */
+async function init() {
+    const [f, l, fl, q] = await Promise.all([
+        getFloods(),
+        getLevel(),
+        getFlow(),
+        getQuality()
+    ]);
+
+    renderBoxes([
+        { title: 'Floods', ...f },
+        { title: 'Water Level', ...l },
+        { title: 'River Flow', ...fl },
+        { title: 'Water Quality', ...q }
+    ]);
+}
+
+init();
+</script>
+
